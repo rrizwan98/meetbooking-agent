@@ -30,7 +30,7 @@ copy .env.example .env
 
 Then edit `.env` and add your database URL:
 ```
-DATABASE_URL=postgresql://neondb_owner:npg_yfVJT48LGBOM@ep-muddy-bird-a44rcp30-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+DATABASE_URL=postgresql://neondb_owner:password-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 PORT=3000
 ```
 
