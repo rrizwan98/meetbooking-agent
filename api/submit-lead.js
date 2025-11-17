@@ -40,10 +40,10 @@ async function handler(req, res) {
     const { name, email, phone, businessName } = req.body;
 
     // Validate required fields
-    if (!name || !email || !phone || !businessName) {
+    if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
-        message: 'All fields are required. Please fill in name, email, phone number, and business name.'
+        message: 'All fields are required. Please fill in name, email, and phone number.'
       });
     }
 
@@ -75,7 +75,7 @@ async function handler(req, res) {
       RETURNING *
     `;
 
-    const values = [name.trim(), email.trim().toLowerCase(), formattedPhone, businessName.trim(), false];
+    const values = [name.trim(), email.trim().toLowerCase(), formattedPhone, businessName ? businessName.trim() : null, false];
 
     const dbPool = getPool();
     const result = await dbPool.query(query, values);

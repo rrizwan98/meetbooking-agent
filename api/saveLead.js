@@ -7,7 +7,7 @@ async function handler(req, res) {
 
   const { name, email, phone, business } = req.body;
 
-  if (!name || !email || !phone || !business) {
+  if (!name || !email || !phone) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -25,7 +25,7 @@ async function handler(req, res) {
       VALUES ($1, $2, $3, $4, false)
     `;
 
-    await client.query(query, [name, email, phone, business]);
+    await client.query(query, [name, email, phone, business ? business : null]);
 
     res.status(200).json({ success: true });
   } catch (error) {

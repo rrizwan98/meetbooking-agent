@@ -249,6 +249,14 @@
             margin-top: 10px;
         }
 
+        button.demo-call-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        button.demo-call-btn:hover {
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
@@ -338,14 +346,8 @@
                 <div class="error-message" id="countryCodeError">Please select country code</div>
             </div>
 
-            <div class="form-group">
-                <label for="businessName">Business Name</label>
-                <input type="text" id="businessName" name="businessName" required>
-                <div class="error-message" id="businessNameError">Business name is required</div>
-            </div>
-
-            <button type="submit" id="submitBtn">
-                Submit
+            <button type="button" id="demoCallBtn" class="demo-call-btn">
+                Start Demo Call
             </button>
         </form>
     </div>
@@ -386,7 +388,7 @@
         ];
 
         const form = document.getElementById('leadForm');
-        const submitBtn = document.getElementById('submitBtn');
+        const demoCallBtn = document.getElementById('demoCallBtn');
         const messageDiv = document.getElementById('message');
         const countryCodeSelect = document.getElementById('countryCode');
         const phoneInput = document.getElementById('phone');
@@ -402,8 +404,8 @@
             countryCodeSelect.appendChild(option);
         });
 
-        // Set default to Pakistan
-        countryCodeSelect.value = '+92';
+        // Set default to USA
+        countryCodeSelect.value = '+1';
 
         function showMessage(text, isSuccess) {
             messageDiv.textContent = text;
@@ -449,7 +451,6 @@
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const countryCode = countryCodeSelect.value;
-            const businessName = document.getElementById('businessName').value.trim();
 
             let isValid = true;
 
@@ -496,18 +497,11 @@
                 }
             }
 
-            // Validate business name
-            if (!businessName) {
-                showError('businessName', 'businessNameError', true);
-                isValid = false;
-            } else {
-                showError('businessName', 'businessNameError', false);
-            }
-
             return isValid;
         }
 
-        form.addEventListener('submit', async (e) => {
+        // Start Demo Call button handler
+        demoCallBtn.addEventListener('click', async (e) => {
             e.preventDefault();
 
             if (!validateForm()) {
@@ -523,12 +517,12 @@
                 name: document.getElementById('name').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 phone: formattedPhone,
-                businessName: document.getElementById('businessName').value.trim()
+                isDemoCall: true
             };
 
-            // Disable submit button and show loading
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
+            // Disable button and show loading
+            demoCallBtn.disabled = true;
+            demoCallBtn.innerHTML = '<span class="spinner"></span>Starting...';
 
             try {
                 const response = await fetch('/api/submit-lead', {
@@ -542,8 +536,10 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    showMessage('Thank you! Your information has been submitted successfully.', true);
+                    showMessage('Thank you! Your information has been submitted and we will start your demo call shortly.', true);
                     form.reset();
+                    // Reset country code to default
+                    countryCodeSelect.value = '+1';
                 } else {
                     showMessage(data.message || 'An error occurred. Please try again.', false);
                 }
@@ -551,13 +547,13 @@
                 showMessage('Network error. Please check your connection and try again.', false);
                 console.error('Error:', error);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Submit';
+                demoCallBtn.disabled = false;
+                demoCallBtn.innerHTML = 'Start Demo Call';
             }
         });
 
         // Real-time validation
-        ['name', 'email', 'phone', 'businessName'].forEach(fieldId => {
+        ['name', 'email', 'phone'].forEach(fieldId => {
             const field = document.getElementById(fieldId);
             field.addEventListener('blur', validateForm);
             field.addEventListener('input', function() {
